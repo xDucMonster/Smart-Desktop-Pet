@@ -1,7 +1,9 @@
 import tkinter as tk
-import random
-import pyautogui
 import extralamps
+
+
+img_path = "C:\\Users\\phbru\\Desktop\\GitHub-Fork\\Smart-Desktop-Pet\\Desktop Pet\\idle.gif"
+
 
 class DesktopPet:
     def __init__(self, root):
@@ -21,7 +23,7 @@ class DesktopPet:
         i = 0
         try:
             while True:
-                frame = tk.PhotoImage(file='path/your_own_pet.gif', format=f'gif -index {i}')
+                frame = tk.PhotoImage(file=img_path, format=f'gif -index {i}')
                 self.frames.append(frame)
                 i += 1
         except tk.TclError:
@@ -47,19 +49,17 @@ class DesktopPet:
         self.canvas.bind("<Button-1>", self.on_pet_click)
 
     def move_pet(self):
+        screen_width = self.root.winfo_screenwidth()
+
         if self.moving:
+            self.x_pos += self.direction * 4 #change speed
 
-            screen_width = self.root.winfo_screenwidth()
+            if self.x_pos <= 0 or self.x_pos >= screen_width - 100:
+                self.direction *= -1
 
-        self.x_pos += self.direction * 4 #change speed
+            self.root.geometry(f'+{self.x_pos}+{self.y_pos}')
 
-        if self.x_pos <= 0 or self.x_pos >= screen_width - 100:
-            self.direction *= -1
-
-        self.root.geometry(f'+{self.x_pos}+{self.y_pos}')
-
-        self.root.after(100, self.move_pet)
-
+            self.root.after(100, self.move_pet)
 
     def animate_pet(self, frame_index):
         if self.moving:
@@ -81,6 +81,7 @@ class DesktopPet:
         def on_close():
             self.moving = True
             control_window.destroy()
+            self.move_pet()
 
         control_window.protocol("WM_DELETE_WINDOW", on_close)
 
@@ -93,6 +94,7 @@ class DesktopPet:
     def toggle_lights(self, state):
         extralamps.user_input_ToF = state
         extralamps.update_lights()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
